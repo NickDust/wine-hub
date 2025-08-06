@@ -1,0 +1,41 @@
+# Token request
+# POST http://127.0.0.1:8000/api-token-auth/
+# Content-Type: application/json
+
+# {
+#     "username": "",
+#     "password": ""
+# }
+
+
+
+# POST http://127.0.0.1:8000/wine-list-api/region/
+# Content-Type: application/json
+# Authorization: Token 4b9302a98b8aabdb45fd839b1e945285adac8056
+
+# {
+#     "country": "",
+#     "region": ""
+# }
+
+
+# POST http://127.0.0.1:8000/register/
+# Content-Type: application/json
+
+# {
+#     "username": "Nick123",
+#     "email": "test@test.it",
+#     "password": "Password123",
+#     "password2": "Password123"
+# }
+
+# POST  http://127.0.0.1:8000/wine-list-api/sale/
+# Content-Type: application/json
+# Authorization: Token 7d1222464b608a04938f0cafc2ee5456a000cf7d
+
+# {
+#    "wine_id": 3,
+#    "quantity": 2 
+# }
+
+ GET http://127.0.0.1:8000/accounts/logs/
