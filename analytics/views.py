@@ -6,12 +6,12 @@ from rest_framework.response import Response
 from inventory_api.serializers import WineSerializer
 from datetime import datetime, timedelta
 from collections import defaultdict
-from accounts.permission import IsAdmin
+from accounts.permission import IsAdmin, IsManagerOrAdmin
 from rest_framework.authentication import TokenAuthentication
 
 class TopSellingView(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAdmin]
+    permission_classes = [IsManagerOrAdmin]
 
     def get(self, request):
         data = WineModel.objects.all().order_by("-quantity_sold")
@@ -23,7 +23,7 @@ class TopSellingView(APIView):
     
 class LeastSellingView(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAdmin]
+    permission_classes = [IsManagerOrAdmin]
 
     def get(self, request):
         try:
@@ -38,7 +38,7 @@ class LeastSellingView(APIView):
         
 class UnsoldWineView(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAdmin]
+    permission_classes = [IsManagerOrAdmin]
 
     def get(self, request):
         wines_unsold = WineModel.objects.filter(quantity_sold=0)
@@ -106,7 +106,7 @@ class QuarterTrendSalesView(APIView):
 
 class BestEmployeeView(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAdmin]
+    permission_classes = [IsManagerOrAdmin]
 
     def get(self, request):
         try:

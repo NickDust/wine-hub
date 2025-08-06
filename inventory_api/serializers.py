@@ -20,8 +20,6 @@ class WineSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ["revenue"]
     
-   
-
 class RegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegionModel

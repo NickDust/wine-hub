@@ -9,38 +9,47 @@ from accounts.permission import *
 
 
 class WineView(generics.ListCreateAPIView):
-    queryset = WineModel.objects.all()
-    serializer_class = WineSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsManagerOrAdmin]
     
+    queryset = WineModel.objects.all()
+    serializer_class = WineSerializer
+    
 class RegionView(generics.ListCreateAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsManagerOrAdmin]
+
     queryset = RegionModel.objects.all()
     serializer_class = RegionSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsManagerOrAdmin]
+    
 
 class StyleView(generics.ListCreateAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsManagerOrAdmin]
+
     queryset = WineStyleModel.objects.all()
     serializer_class = StyleSerializer
+    
+class TypeView(generics.ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsManagerOrAdmin]
 
-class TypeView(generics.ListCreateAPIView):
     queryset = WineTypeModel.objects.all()
     serializer_class = TypeSerializer
+    
+
+class AppellationView(generics.ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsManagerOrAdmin]
 
-class AppellationView(generics.ListCreateAPIView):
     queryset = AppellationModel.objects.all()
     serializer_class = AppellationSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsManagerOrAdmin]
+    
 
 class DashBoardApiView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsStaffOrManagerOrAdmin]
+
     def get(self, request):
         regions = RegionSerializer(RegionModel.objects.all(), many=True).data
         types = TypeSerializer(WineTypeModel.objects.all(), many=True).data
@@ -55,13 +64,18 @@ class DashBoardApiView(APIView):
         })
 
 class WineRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsManagerOrAdmin]
+    
     queryset = WineModel.objects.all()
     serializer_class = WineSerializer
     lookup_field ="pk"
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsManagerOrAdmin]
+    
 
 class WineRetrieveView(generics.RetrieveAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsStaffOrManagerOrAdmin]
+
     queryset = WineModel.objects.all()
     serializer_class = WineSerializer
     lookup_field = "pk"
