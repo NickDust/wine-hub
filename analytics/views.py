@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from inventory_api.models import WineModel, SaleModel
 from rest_framework import status
 from rest_framework.views import APIView
