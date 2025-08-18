@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
 from datetime import datetime, timedelta
 from .models import LogModel
+from accounts.permission import IsAdmin, IsManagerOrAdmin
+from rest_framework.authentication import TokenAuthentication
 
 
 class RegisterView(APIView):
@@ -22,6 +24,9 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LogView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsManagerOrAdmin]
+
     def get(self, request):
         
         try:

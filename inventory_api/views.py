@@ -5,6 +5,8 @@ from .serializers import *
 from .models import *
 from rest_framework.authentication import TokenAuthentication
 from accounts.permission import *
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 
@@ -84,6 +86,29 @@ class RegisterSaleView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsStaffOrManagerOrAdmin]
 
+    @swagger_auto_schema(
+        operation_description=""" \
+        "Register a new sale." \
+        "**Access:** Staff, Manager, Admin." \
+        "**Required:**" \
+        "- wine_id (int)," \
+        "- quantity (int)." \
+        "**Results:**" \
+        "- If the stock of the wine sold is sufficient, is gonna register the sale and updating the quantity in stock""",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "wine_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="Wine ID"),
+                "quantity": openapi.Schema(type=openapi.TYPE_INTEGER, description="Quantity of the wine sold"),
+            },
+            required=["wine_id", "quantity"]
+            
+        ),
+        responses={
+            201: "Sale registered.",
+            404: "Data not valid.",
+            401: "Unauthorized."
+        })
     def post(self, request):
         serializer = RegisterSaleSerializer(data=request.data)
         if serializer.is_valid():

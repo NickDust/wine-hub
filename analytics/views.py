@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 from accounts.permission import IsAdmin, IsManagerOrAdmin
 from rest_framework.authentication import TokenAuthentication
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 class TopSellingView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -45,11 +47,40 @@ class UnsoldWineView(APIView):
             return Response({"message": "No wine found."}, status=status.HTTP_404_NOT_FOUND)
         serializer = WineSerializer(wines_unsold, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-            
+
+days_param = openapi.Parameter(
+    name="days",
+    in_=openapi.IN_QUERY,
+    description="Filtered for amount of days (default 30).",
+    type=openapi.TYPE_INTEGER,
+    required=False,
+    default=30,
+)
+
+wine_id_param = openapi.Parameter(
+    name="wine_id",
+    in_=openapi.IN_QUERY,
+    description="Filtered the revenue just for a specific wine (ID).",
+    type=openapi.TYPE_INTEGER,
+    required=False,
+)
+
 class RevenueFilterView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAdmin]
 
+    @swagger_auto_schema(
+        operation_description="""
+        Get the amount of revenue for a given period of time (Default 30 days).
+        **Access:** Admin only.
+        if wine_id given, the result will be the revenue for that wine only.""",
+        operation_summary= "Filtered Revenue.",
+        manual_parameters=[days_param, wine_id_param],
+        responses={
+            200: "OK",
+            404: "Parameters not valid.",
+            401: "Unauthorized"
+        })
     def get(self, request):
         try:
             wine_id = request.query_params.get("wine_id")
@@ -124,6 +155,3 @@ class BestEmployeeView(APIView):
             return Response({"Top employees": top_staff}, status=status.HTTP_200_OK)
         except (ValueError, TypeError):
             return Response({"message": "Bad request, check the parameter or data format."}, status=status.HTTP_400_BAD_REQUEST)
-  
-        
-        
