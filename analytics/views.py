@@ -1,6 +1,7 @@
 from inventory_api.models import WineModel, SaleModel
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.views import APIView
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from inventory_api.serializers import WineSerializer
 from datetime import datetime, timedelta
@@ -9,6 +10,10 @@ from accounts.permission import IsAdmin, IsManagerOrAdmin
 from rest_framework.authentication import TokenAuthentication
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+import csv
+from django.http import HttpResponse
+from rest_framework.response import Response
+from accounts.models import LogModel
 
 class TopSellingView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -155,3 +160,48 @@ class BestEmployeeView(APIView):
             return Response({"Top employees": top_staff}, status=status.HTTP_200_OK)
         except (ValueError, TypeError):
             return Response({"message": "Bad request, check the parameter or data format."}, status=status.HTTP_400_BAD_REQUEST)
+
+class BaseExportView(viewsets.ViewSet):
+
+    def export(self, filename, headers, rows):
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = f"attachment; filename='{filename}.csv'"
+
+        writer = csv.writer(response)
+        writer.writerow(headers)
+
+        for row in rows:
+            writer.writerow(row)
+        return response
+
+class ExportViewSet(BaseExportView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAdmin]
+
+    @action(detail=False, methods=["get"], url_path="wine-list")
+    def wine_list(self, request):
+        wines = WineModel.objects.all()
+        rows = [
+            [wine.name, wine.stock, wine.price, wine.retail_price, wine.revenue()]
+            for wine in wines
+        ]
+        return self.export(filename="wines", headers=["Wine", "Quantity", "Price", "Retail Price", "Revenue"], rows=rows)
+
+    
+    @action(detail=False, methods=["get"], url_path="sales")
+    def sales(self,request):
+        sales = SaleModel.objects.all()
+        rows = [
+            [sale.timestamp.date(), sale.wine.name, sale.user.username, sale.quantity_sold, sale.quantity_sold * sale.wine.retail_price]
+            for sale in sales
+            ]
+        return self.export(filename="sales", headers=["Date","Wine","User","Quantity","Revenue"], rows=rows)
+
+    @action(detail=False, methods=["get"], url_path="logs")
+    def logs(self,request):
+
+        logs = LogModel.objects.all()
+        rows =[[log.timestamp.date(), log.action, log.user.username, log.details]
+               for log in logs
+               ]
+        return self.export(filename="logs", headers=["Date","Action","User","Details"], rows=rows)
