@@ -45,9 +45,13 @@ class RegisterSaleSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(min_value=1)
 
 class SaleSerializer(serializers.ModelSerializer):
+    return_to_stock = serializers.BooleanField(default=False, write_only=True)
     class Meta:
         model = SaleModel
         read_only_fields = ["timestamp", "user"]
         fields = "__all__"
         depth = 1
 
+class RestockSerializer(serializers.Serializer):
+    quantity = serializers.IntegerField(min_value=1, required=True)
+    note = serializers.CharField(required=False, allow_blank=True)

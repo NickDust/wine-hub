@@ -21,6 +21,8 @@ class LogModel(models.Model):
         ("user_logged_out", "User Logged Out"),
         ('user_registered', 'User Registered'),
         ('wine_deleted', 'Wine Deleted'),
+        ("restock", "Restock"),
+        ("refund", "Refund")
     ]
     
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

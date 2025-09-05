@@ -9,6 +9,7 @@ urlpatterns = [
     path("least-selling/", views.LeastSellingView.as_view(), name="least-selling"),
     path("unsold-wines/", views.UnsoldWineView.as_view(), name="unsold-wines"),
     path("quarter-trend/", views.QuarterTrendSalesView.as_view(), name="quarter-trend"),
+    path("low-stock/", views.LowStockView.as_view(), name="low-stock")
 ]
 
 router = DefaultRouter()

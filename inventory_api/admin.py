@@ -22,7 +22,7 @@ class InventoryAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 class SaleAdmin(admin.ModelAdmin):
-    list_display = ["wine", "user", "quantity_sold", "timestamp"]
+    list_display = ["id", "wine", "user", "quantity_sold", "timestamp"]
     readonly_fields = ["timestamp"]  
 
 admin.site.register(WineModel, InventoryAdmin)

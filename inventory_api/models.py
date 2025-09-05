@@ -87,6 +87,7 @@ class SaleModel(models.Model):
     wine = models.ForeignKey(WineModel, on_delete=models.PROTECT, verbose_name="Wine")
     quantity_sold = models.PositiveIntegerField(default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
+    refund_qty = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.user}"

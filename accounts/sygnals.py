@@ -24,12 +24,12 @@ def log_sale_created(sender, instance=None, created=False, **kwargs):
 @receiver(post_delete, sender=WineModel)
 def log_wine_deleted(sender, instance=None, created=False, **kwargs):
     if instance.added_by:
-        LogModel.objects.create(user=instance.added_by, action="wine_deleted", detail=f"deleted wine: {instance.name}")
+        LogModel.objects.create(user=instance.added_by, action="wine_deleted", details=f"deleted wine: {instance.name}")
 
 @receiver(user_logged_in)
 def log_login(sender, request, user, **kwargs):
-    LogModel.objects.create(user=user, action="user_logged_in", detail=f"{user.username} Logged in.")
+    LogModel.objects.create(user=user, action="user_logged_in", details=f"{user.username} Logged in.")
 
 @receiver(user_logged_out)
 def log_logout(sender, request, user, **kwargs):
-    LogModel.objects.create(user=user, action="out", detail=f"{user.username} Logged out.")
+    LogModel.objects.create(user=user, action="out", details=f"{user.username} Logged out.")

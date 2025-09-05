@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from inventory_api.serializers import WineSerializer
 from datetime import datetime, timedelta
 from collections import defaultdict
-from accounts.permission import IsAdmin, IsManagerOrAdmin
+from accounts.permission import IsAdmin, IsManagerOrAdmin, IsStaffOrManagerOrAdmin
 from rest_framework.authentication import TokenAuthentication
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -161,6 +161,22 @@ class BestEmployeeView(APIView):
         except (ValueError, TypeError):
             return Response({"message": "Bad request, check the parameter or data format."}, status=status.HTTP_400_BAD_REQUEST)
 
+class LowStockView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsStaffOrManagerOrAdmin]
+
+    def get(self, request):
+        low_stock = {}
+        wines = WineModel.objects.all()
+        for wine in wines:
+            if wine.stock <= 10:
+                low_stock[wine.name] = wine.stock
+
+        if not low_stock: 
+                return Response({"message": "No low stock wines found"}, status=status.HTTP_200_OK)
+        
+        return Response({"message": f"Low stock wines: {low_stock}"}, status=status.HTTP_200_OK)
+    
 class BaseExportView(viewsets.ViewSet):
 
     def export(self, filename, headers, rows):
@@ -187,7 +203,6 @@ class ExportViewSet(BaseExportView):
         ]
         return self.export(filename="wines", headers=["Wine", "Quantity", "Price", "Retail Price", "Revenue"], rows=rows)
 
-    
     @action(detail=False, methods=["get"], url_path="sales")
     def sales(self,request):
         sales = SaleModel.objects.all()

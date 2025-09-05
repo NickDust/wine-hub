@@ -12,5 +12,7 @@ urlpatterns = [
     path("wine-list-api/appelation/", views.AppellationView.as_view(), name="wine-appelation"),
     path("wine-list-api/detail/<int:pk>", views.WineRetrieveView.as_view(), name="wine-detail"),
     path("api-token-auth/", obtain_auth_token, name="api_token_auth"),
-    path("wine-list-api/sale/", views.RegisterSaleView.as_view(), name="sale")
+    path("wine-list-api/sale/", views.RegisterSaleView.as_view(), name="sale"),
+    path("wine-list-api/<int:pk>/restock/", views.RestockView.as_view(), name="restock"),
+    path("wine-list-api/<int:pk>/sales/refund", views.RefundView.as_view(), name="sale-refund")
 ]
