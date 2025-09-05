@@ -9,7 +9,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def user_role(sender, instance=None, created=False, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance)
+        UserProfile.objects.create(user=instance, role="staff")
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def log_user_registeration(sender, instance=None, created=False, **kwargs):
