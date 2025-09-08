@@ -116,6 +116,16 @@ class AnalyticsTest(APITestCase):
         )
 
         # Sales
+        
+        cls.client.credentials(HTTP_AUTHORIZATION=f"Token {cls.tokens['Giorgio']}")
+        cls.client.post("/wine-list-api/sale/", {"wine_id": cls.wine1.id, "quantity": 3}, format="json")
+        cls.client.credentials(HTTP_AUTHORIZATION=f"Token {cls.tokens['Giorgio']}")
+        cls.client.post("/wine-list-api/sale/", {"wine_id": cls.wine2.id, "quantity": 3}, format="json")
+        cls.client.credentials(HTTP_AUTHORIZATION=f"Token {cls.tokens['Sasha']}")
+        cls.client.post("/wine-list-api/sale/", {"wine_id": cls.wine2.id, "quantity": 5}, format="json")
+        cls.client.credentials(HTTP_AUTHORIZATION=f"Token {cls.tokens['Marco']}")
+        cls.client.post("/wine-list-api/sale/", {"wine_id": cls.wine3.id, "quantity": 15}, format="json")
+
         now = timezone.now()
         SaleModel.objects.create(wine=cls.wine1 , user=cls.user1, quantity_sold=3, timestamp=now - timedelta(days=5))
         SaleModel.objects.create(wine=cls.wine1 , user=cls.user2, quantity_sold=2, timestamp=now)  
@@ -127,4 +137,43 @@ class AnalyticsTest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.tokens["Giorgio"]}")
         response = self.client.get("/analytics/unsold-wines/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("Brunello di Montalcino", [wine["name"] for wine in response.data])
+
+        # sold wine not in list
+        self.assertNotIn("Chianti Classico", [wine["name"] for wine in response.data])
+    
+    def test_top_selling(self):
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.tokens["Giorgio"]}")
+        response = self.client.get("/analytics/top-selling/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.data
+        self.assertEqual("Montepulciano d'Abruzzo", data["name"])
+
+        # not top selling
+        self.assertNotEqual("Chianti Classico", data["name"])
+
+    def test_revenue_filter(self):
+
+        # No filters (30 days default)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.tokens["Giorgio"]}")
+        response = self.client.get("/analytics/revenue/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("30", response.data["message"])
         
+        # filter days 
+        response = self.client.get("/analytics/revenue/?days=45")
+        self.assertIn("45", response.data["message"])
+
+        #filter wine id 
+        response = self.client.get("/analytics/revenue/?wine_id=4")
+        # bottole of the specific wine sold
+        self.assertIn("0", response.data["message"])
+
+        #filters wine id and days
+        response = self.client.get("/analytics/revenue/?days=20&wine_id=4")
+        self.assertIn("20", response.data["message"])
+        # bottles of the wine id 4 sold
+        self.assertIn("0", response.data["message"])
+
+    

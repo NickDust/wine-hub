@@ -7,13 +7,15 @@ from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
 from datetime import datetime, timedelta
 from .models import LogModel
-from accounts.permission import IsAdmin, IsManagerOrAdmin
+from accounts.permission import IsManagerOrAdmin
 from rest_framework.authentication import TokenAuthentication
+from drf_yasg.utils import swagger_auto_schema
 
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
+    @swagger_auto_schema(request_body=RegisterSerializer)
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():

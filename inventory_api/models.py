@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.db.models import CheckConstraint, Q, F
 
 class RegionModel(models.Model):
     country = models.CharField(max_length=100)
@@ -73,6 +74,22 @@ class WineModel(models.Model):
     retail_price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name= "retail price")
     quantity_sold = models.PositiveIntegerField(default=0, verbose_name="quantity sold")
 
+    class Meta:
+        constraints = [
+            CheckConstraint(
+                check=Q(stock__gte=0),
+                name="wine_stock_gte_0"
+            ),
+            CheckConstraint(
+                check=Q(retail_price__gt=F("price")),
+                name="retail_price_gt_price"
+            ),
+            CheckConstraint(
+                check=Q(price__gte=0),
+                name="price_gte_0"
+            )
+        ]
+
     def revenue(self):
         if self.retail_price is not None:
             return self.retail_price * self.quantity_sold
@@ -85,9 +102,20 @@ class WineModel(models.Model):
 class SaleModel(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="User")
     wine = models.ForeignKey(WineModel, on_delete=models.PROTECT, verbose_name="Wine")
-    quantity_sold = models.PositiveIntegerField(default=0)
+    quantity_sold = models.PositiveIntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)
     refund_qty = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            CheckConstraint(
+                check=Q(quantity_sold__gt=0),
+                name="quantity_sold_gt_0"
+            ),
+            CheckConstraint(
+                check=Q(refund_qty__lte=F("quantity_sold")),
+                name="refund_qty_lte_quantity_sold"),
+        ]
 
     def __str__(self):
         return f"{self.user}"
