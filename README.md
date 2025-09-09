@@ -45,7 +45,7 @@ A Django Rest Framework project for managing wine inventory, sales, and analytic
     ```
 ## API Documentation
 ~ Swagger UI is available at:
-  http://127.0.0.1:8000/swagger/
+  http://127.0.0.1:8000
 
 ## Future Improvements
 
