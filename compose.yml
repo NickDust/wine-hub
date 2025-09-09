@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    container_name: django-web
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app                 # hot-reload del codice
+      - ./db.sqlite3:/app/db.sqlite3   # persistenza del DB sqlite
+    env_file:
+      - .env
