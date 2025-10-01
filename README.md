@@ -52,7 +52,7 @@ A Django Rest Framework project for managing wine inventory, sales, and analytic
 ~ Add Docker support
 ~ Add unit tests
 ~ Add JWT authentication
-~ Deploy to cloud (Heroku / Railway)
+~ Deploy to AWS
 
 
 Made with ❤️ while learning Django REST Framework.
