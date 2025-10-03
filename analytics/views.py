@@ -2,7 +2,6 @@ from inventory_api.models import WineModel, SaleModel
 from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from inventory_api.serializers import WineSerializer
 from datetime import datetime, timedelta
 from collections import defaultdict

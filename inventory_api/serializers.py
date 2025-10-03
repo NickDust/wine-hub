@@ -1,8 +1,5 @@
 from rest_framework import serializers
 from .models import WineModel, RegionModel, WineTypeModel, WineStyleModel, AppellationModel, SaleModel
-from django.contrib.auth.models import User
-from accounts.models import UserProfile
-
 
 class WineSerializer(serializers.ModelSerializer):
     region = serializers.StringRelatedField()
